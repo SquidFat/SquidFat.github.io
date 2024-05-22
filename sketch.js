@@ -1,189 +1,604 @@
-let cX = [];
-let cY = [];
-//length
-let len = 1;
-//size of each section
-let diameter = 10;
+/*
 
-let xDirectionArray = [1, 0, -1, 0];
-let yDirectionArray = [0, 1, 0, -1];
-let directionIndex = 0;
+SPECIFIC MOVE NUMBER 1:
+My program will counter all opening corner moves to square 
+[0][0], [0][2], [2][0], and [2][2] by placing an ’O’ in square [1][1]
+The code for this may be found at line numbers “403-413”
 
-let foodX;
-let foodY;
+X # #   X # #
+# # # → # O #
+# # #   # # #
 
-let music;
-let crunch;
+# # X   # # X
+# # # → # O #
+# # #   # # #
 
-function preload() {
-  music = loadSound("Music.mp3");
-  crunch = loadSound("Crunch.mp3");
+# # #   # # #
+# # # → # O #
+X # #   X # #
+
+# # #   # # #
+# # # → # O #
+# # X   # # X
+
+SPECIFIC MOVE NUMBER 2:
+My program will counter all opening side moves to square 
+[0][1], [1][0], [1][2], [2][1] by placing an ’O’ in square [1][1]
+The code for this may be found at line numbers “416-426”
+
+# X #   # X #
+# # # → # O #
+# # #   # # #
+
+# # #   # # #
+X # # → X O #
+# # #   # # #
+
+# # #   # # #
+# # X → # O X
+# # #   # # #
+
+# # #   # # #
+# # # → # O #
+# X #   # X #
+
+SPECIFIC MOVE NUMBER 3:
+My program will counter an opening middle move to square 
+[1][1] by placing an ’O’ in square [0][2]
+The code for this may be found at line numbers “429-436”
+
+# # #   # # O
+# X # → # X #
+# # #   # # #
+
+Specific Trap 1:
+My program will counter an opening trap to square 
+[0][0] and [2][2] by placing an ’O’ in square [1][1] and then [1][2]
+The code for this may be found at line numbers “439-443”
+
+X # #   X # #   X # #   X # #
+# # # → # O # → # O # → # O O
+# # #   # # #   # # X   # # X
+
+Specific Trap 1 (Part 2):
+My program will counter an opening trap to square 
+[0][2] and [2][0] by placing an ’O’ in square [1][1] and then [1][2]
+The code for this may be found at line numbers “445-449”
+
+# # X   # # X   # # X   # # X
+# # # → # O # → # O # → # O O
+# # #   # # #   X # #   X # #
+
+Specific Trap 2:
+My program will counter an opening trap to square 
+[1][1] and [2][0] by placing an ’O’ in square [0][2] and then [0][0]
+The code for this may be found at line numbers “452-457”
+
+# # #   # # O   # # O   O # O
+# X # → # X # → # X # → # X #
+# # #   # # #   X # #   X # #
+
+Specific Trap 3:
+My program will counter an opening trap to square 
+[0][1] and [1][2] by placing an ’O’ in square [1][1] and then [0][2]
+The code for this may be found at line numbers “460-464”
+
+# X #   # X #   # X #   # X O
+# # # → # O # → # O X → # O X
+# # #   # # #   # # #   # # #
+
+Specific Trap 3 (Part 2):
+My program will counter an opening trap to square 
+[0][1] and [1][0] by placing an ’O’ in square [1][1] and then [0][0]
+The code for this may be found at line numbers “466-470”
+
+# X #   # X #   # X #   O X #
+# # # → # O # → X O # → X O #
+# # #   # # #   # # #   # # #
+
+Specific Trap 3 (Part 3):
+My program will counter an opening trap to square 
+[1][0] and [2][1] by placing an ’O’ in square [1][1] and then [2][0]
+The code for this may be found at line numbers “472-476”
+
+# # #   # # #   # # #   # # #
+X # # → X O # → X O # → X O #
+# # #   # # #   # X #   O X #
+
+Specific Trap 3 (Part 4):
+My program will counter an opening trap to square 
+[2][1] and [1][2] by placing an ’O’ in square [1][1] and then [2][2]
+The code for this may be found at line numbers “478-482”
+
+# # #   # # #   # # #   # # #
+# # # → # O # → # O X → # O X
+# X #   # X #   # X #   # X O
+
+Specific Trap 4:
+My program will counter an opening trap to square 
+[0][0] and [1][2] by placing an ’O’ in square [1][1] and then [0][2]
+The code for this may be found at line numbers “485-489”
+
+X # #   X # #   X # #   X # O
+# # # → # O # → # O X → # O X
+# # #   # # #   # # #   # # #
+
+Specific Trap 4 (Part 2):
+My program will counter an opening trap to square 
+[0][0] and [2][1] by placing an ’O’ in square [1][1] and then [2][0]
+The code for this may be found at line numbers “491-495”
+
+X # #   X # #   X # #   X # #
+# # # → # O # → # O # → # O #
+# # #   # # #   # X #   O X #
+
+Specific Trap 4 (Part 3):
+My program will counter an opening trap to square 
+[0][2] and [1][0] by placing an ’O’ in square [1][1] and then [0][0]
+The code for this may be found at line numbers “497-501”
+
+# # X   # # X   # # X   O # X
+# # # → # O # → X O # → X O #
+# # #   # # #   # # #   # # #
+
+Specific Trap 4 (Part 4):
+My program will counter an opening trap to square 
+[0][2] and [2][1] by placing an ’O’ in square [1][1] and then [2][2]
+The code for this may be found at line numbers “503-507”
+
+# # X   # # X   # # X   # # X
+# # # → # O # → # O # → # O #
+# # #   # # #   # X #   # X O
+
+Specific Trap 4 (Part 5):
+My program will counter an opening trap to square 
+[2][0] and [0][1] by placing an ’O’ in square [1][1] and then [0][0]
+The code for this may be found at line numbers “509-513”
+
+# # #   # # #   # X #   O X #
+# # # → # O # → # O # → # O #
+X # #   X # #   X # #   X # #
+
+Specific Trap 4 (Part 6):
+My program will counter an opening trap to square 
+[2][0] and [1][2] by placing an ’O’ in square [1][1] and then [2][2]
+The code for this may be found at line numbers “515-519”
+
+# # #   # # #   # # #   # # #
+# # # → # O # → # O X → # O X
+X # #   X # #   X # #   X # O
+
+Specific Trap 4 (Part 7):
+My program will counter an opening trap to square 
+[2][2] and [1][0] by placing an ’O’ in square [1][1] and then [2][0]
+The code for this may be found at line numbers “521-525”
+
+# # #   # # #   # # #   # # #
+# # # → # O # → X O # → X O #
+# # X   # # X   # # X   O # X
+
+Specific Trap 4 (Part 8):
+My program will counter an opening trap to square 
+[2][2] and [0][1] by placing an ’O’ in square [1][1] and then [0][2]
+The code for this may be found at line numbers “527-531”
+
+# # #   # # #   # X #   # X O
+# # # → # O # → # O # → # O #
+# # X   # # X   # # X   # # X
+
+*/
+
+let moveCount = 0
+
+var decisionArray = [];
+for (var i = 0; i < 3; i++) {
+ decisionArray[i] = [];
+}
+
+var tempArray = [];
+for (var i = 0; i < 3; i++) {
+ tempArray[i] = [];
 }
 
 function setup() {
-  noLoop();
-  frameRate(10);
-  cX[0] = 35;
-  cY[0] = 15;
-  cX[1] = 25;
-  cY[1] = 15;
-  cX[2] = 15;
-  cY[2] = 15;
-  createCanvas(700, 400);
-  plotFood();
+ createCanvas(400, 400);
+ background("yellow");
+ textSize("12");
+ line(133,0,133,400)
+ line(266,0,266,400)
+ line(0,133,400,133)
+ line(0,266,400,266)
+ //reset decisionArray with 0's
+ initArray(decisionArray);
+ initArray(tempArray);
+ console.log(decisionArray[0][0])
+}//setup
+function initArray(x) {
+ for (let i = 0; i < 3; i++) {
+ for (let j = 0; j < 3; j++) {
+ x[i][j] = "0";
+ } //for j
+ } //for i
+}
+
+function outputMove() {
   
-  //start button
-  button = createButton("start!");
-  button.mouseClicked(strt);
-  button.size(100, 50);
-  button.position(420, 20);
-  button.style("font-family", "Comic Sans MS");
-  button.style("font-size", "28px");
+ if (
+ mouseX > 0 &&
+ mouseX < 133 &&
+ mouseY > 0 &&
+ mouseY < 133 &&
+ mouseIsPressed &&
+ decisionArray[0][0] == "0"
+ ) {
+ drawX(1);
+ moveCount++;
+ decisionArray[0][0] = "X"
+ consoleOutput(decisionArray)
+ } //if  
 
-  //up button
-  button = createButton("U");
-  button.mouseClicked(upButton);
-  button.size(80, 50);
-  button.position(500, 120);
-  button.style("font-family", "Comic Sans MS");
-  button.style("font-size", "28px");
+ if (
+ mouseX > 133 &&
+ mouseX < 266 &&
+ mouseY > 0 &&
+ mouseY < 133 &&
+ mouseIsPressed &&
+ decisionArray[0][1] == "0"
+ ) {
+ drawX(2);
+ moveCount++;
+ decisionArray[0][1] = "X"
+ consoleOutput(decisionArray)
+ } //if
+  
+ if (
+ mouseX > 266 &&
+ mouseX < 400 &&
+ mouseY > 0 &&
+ mouseY < 133 &&
+ mouseIsPressed &&
+ decisionArray[0][2] == "0"
+ ) {
+ drawX(3);
+ moveCount++;
+ decisionArray[0][2] = "X"
+ consoleOutput(decisionArray)
+ } //if
 
-  //down button
-  button = createButton("D");
-  button.mouseClicked(downButton);
-  button.size(80, 50);
-  button.position(500, 300);
-  button.style("font-family", "Comic Sans MS");
-  button.style("font-size", "28px");
+ if (
+ mouseX > 0 &&
+ mouseX < 133 &&
+ mouseY > 133 &&
+ mouseY < 266 &&
+ mouseIsPressed &&
+ decisionArray[1][0] == "0"
+ ) {
+ drawX(4);
+ moveCount++;
+ decisionArray[1][0] = "X"
+ consoleOutput(decisionArray)
+ } //if
 
-  //left button
-  button = createButton("L");
-  button.mouseClicked(leftButton);
-  button.size(80, 50);
-  button.position(420, 210);
-  button.style("font-family", "Comic Sans MS");
-  button.style("font-size", "28px");
+ if (
+ mouseX > 133 &&
+ mouseX < 266 &&
+ mouseY > 133 &&
+ mouseY < 266 &&
+ mouseIsPressed &&
+ decisionArray[1][1] == "0"
+ ) {
+ drawX(5);
+ moveCount++;
+ decisionArray[1][1] = "X"
+ consoleOutput(decisionArray)
+ } //if
+  
+ if (
+ mouseX > 266 &&
+ mouseX < 400 &&
+ mouseY > 133 &&
+ mouseY < 266 &&
+ mouseIsPressed &&
+ decisionArray[1][2] == "0"
+ ) {
+ drawX(6);
+ moveCount++;
+ decisionArray[1][2] = "X"
+ consoleOutput(decisionArray)
+ } //if
 
-  //right button
-  button = createButton("R");
-  button.mouseClicked(rightButton);
-  button.size(80, 50);
-  button.position(580, 210);
-  button.style("font-family", "Comic Sans MS");
-  button.style("font-size", "28px");
-}
+ if (
+ mouseX > 0 &&
+ mouseX < 133 &&
+ mouseY > 266 &&
+ mouseY < 400 &&
+ mouseIsPressed &&
+ decisionArray[2][0] == "0"
+ ) {
+ drawX(7);
+ moveCount++;
+ decisionArray[2][0] = "X"
+ consoleOutput(decisionArray)
+ }//if
+ 
+ if (
+ mouseX > 133 &&
+ mouseX < 266 &&
+ mouseY > 266 &&
+ mouseY < 400 &&
+ mouseIsPressed &&
+ decisionArray[2][1] == "0"
+ ) {
+ drawX(8);
+ moveCount++;
+ decisionArray[2][1] = "X"
+ consoleOutput(decisionArray)
+ }//if
+   
+ if (
+ mouseX > 266 &&
+ mouseX < 400 &&
+ mouseY > 266 &&
+ mouseY < 400 &&
+ mouseIsPressed &&
+ decisionArray[2][2] == "0"
+ ) {
+ drawX(9);
+ moveCount++;
+ decisionArray[2][2] = "X"
+ consoleOutput(decisionArray)
+ } //if
+}//outputMove
 
-function strt() {
-  loop();
-  music.play();
-}
+function confirmWin(n){
+  if (
+    n[0][0] == n[0][1] && n[0][0] == n[0][2] && n[0][0]!="0" || 
+    n[1][0] == n[1][1] && n[1][0] == n[1][2] && n[1][0]!="0" ||
+    n[2][0] == n[2][1] && n[2][0] == n[2][2] && n[2][0]!="0" || 
+    
+    n[0][0] == n[1][0] && n[0][0] == n[2][0] && n[0][0]!="0" ||
+    n[0][1] == n[1][1] && n[0][1] == n[2][1] && n[0][1]!="0" || 
+    n[0][2] == n[1][2] && n[0][2] == n[2][2] && n[0][2]!="0" ||
+    
+    n[0][0] == n[1][1] && n[0][0] == n[2][2] && n[0][0]!="0" || 
+    n[2][0] == n[1][1] && n[2][0] == n[0][2] && n[2][0]!="0" 
+  ) {
+  return true;
+  }//if
+  else {
+  return false;
+  }//else
+}//cW
 
-function rightButton() {
-  if (directionIndex != 2) {
-    directionIndex = 0;
+function checkWin(n){
+  if (confirmWin(n)) {
+    noLoop()
+    textSize(40)
+  if (moveCount%2==0) {
+    text("O Won",140,200) 
   }
-}
-
-function leftButton() {
-  if (directionIndex != 0) {
-    directionIndex = 2;
-  }
-}
-
-function upButton() {
-  if (directionIndex != 1) {
-    directionIndex = 3;
-  }
-}
-
-function downButton() {
-  if (directionIndex != 3) {
-    directionIndex = 1;
-  }
-}
-
-function keyPressed() {
-  if (keyCode === RIGHT_ARROW && directionIndex != 2) {
-    directionIndex = 0;
-  } //if
-  if (keyCode === DOWN_ARROW && directionIndex != 3) {
-    directionIndex = 1;
-  } //if
-  if (keyCode === LEFT_ARROW && directionIndex != 0) {
-    directionIndex = 2;
-  } //if
-  if (keyCode === UP_ARROW && directionIndex != 1) {
-    directionIndex = 3;
-  } //if
-} //keyPressed
-
-function caterpillar() {
-  if (cX[0] == foodX && cY[0] == foodY) {
-    plotFood();
-    len += 1;
-    crunch.play();
-  }
-  for (let i = len - 1; i > 0; i--) {
-    cX[i] = cX[i - 1];
-    cY[i] = cY[i - 1];
-  }
-  cX[0] += xDirectionArray[directionIndex] * 10;
-  cY[0] += yDirectionArray[directionIndex] * 10;
-  for (let i = 1; i < len; i++) {
-    if (cX[0] == cX[i] && cY[0] == cX[i]) {
-      dead = true;
+  if (moveCount%2==1) {
+    text("X Won",140,200)
     }
-  }
-  for (let i = 0; i < len; i++) {
-    fill("green");
-    cX[i] = constrain(cX[i], 5, 400 - 5);
-    cY[i] = constrain(cY[i], 5, 400 - 5);
-    circle(cX[i], cY[i], diameter);
+  }//if[]
+  else if (moveCount==9) {
+    noLoop()
+    textSize(40)
+    text("Draw",150,200)
+  }//else if
+}//checkWin
+
+//grid1 = decisionArray
+//grid2 = tempArray
+function computerRandomMove(grid1, grid2){
+  let row, col, a, b, squareNumber;
+  let looking = true
+  for (let i = 0; i < 3; i++) {
+  for (let j = 0; j < 3; j++) {
+  grid2[i][j] = grid1[i][j]
+  } //for j
+} //for i
+
+//Specific Move Number 1
+if (moveCount==1) {
+if (
+grid1[0][0] == "X" ||
+grid1[0][2] == "X" ||
+grid1[2][0] == "X" ||
+grid1[2][2] == "X"
+) {
+grid1[1][1] = "O"
+return 5;
   }
 }
 
-function crossOver() {
-  if (cX[0] > 5 && cX[0] < 395 && cY[0] > 5 && cY[0] < 395 && len > 1) {
-    for (let i = 1; i < len; i++) {
-      if (cX[0] == cX[i] && cY[0] == cY[i]) {
-        noLoop();
-      }
-    }
+//Specific Move Number 2
+if (moveCount==1) {
+if (
+grid1[0][1] == "X" ||
+grid1[1][0] == "X" ||
+grid1[1][2] == "X" ||
+grid1[2][1] == "X"
+) {
+grid1[1][1] = "O"
+return 5;
+  }
+}
+  
+//Specific Move Number 3
+if (moveCount==1) {
+  if (
+  grid1[1][1] == "X"
+  ) {
+  grid1[0][2] = "O"
+  return 3;
   }
 }
 
-function plotFood() {
-  let success = false;
-  while (!success) {
-    foodX = round(random(5, 399));
-    foodX -= foodX % 10;
-    foodX += 5;
-    foodY = round(random(5, 401));
-    foodY -= foodY % 10;
-    foodY += 5;
-    for (let i = 0; i < len; i++) {
-      if (cX[i] == foodX && cY[i] == foodY) {
-        success = false;
-        break;
-      } //if
+//Specific Trap Number 1
+if (moveCount == 3) {
+  if (grid1[0][0] == "X" && grid1[2][2] == "X"){
+    grid1[1][2] = "O"
+    return 6;
+  }//if
+  //Part 2
+else if (grid1[0][2] == "X" && grid1[2][0] == "X") {
+  grid1[1][2] = "O"
+  return 6;
+  }//else if
+}//moveCount  
 
-      //will cause while loop to stop
-      if (i == len - 1) {
-        success = true;
-      } //if
-    } //for i
-  } //while
-} //plotFood
+//Specific Trap Number 2
+if (moveCount==3) {
+  if (grid1[1][1] == "X" && grid1[2][0] == "X"){
+    grid1[0][0] = "O"
+    return 1;
+  }//nested if
+}//if
+
+//Specific Trap Number 3
+if (moveCount==3 && grid1[0][1] == "X" && grid1[1][2] == "X"
+  ) {
+  grid1[0][2] = "O"
+  return 3;
+}
+//Part 2
+if (moveCount==3 && grid1[0][1] == "X" && grid1[1][0] == "X"
+  ) {
+  grid1[0][0] = "O"
+  return 1;
+}
+//Part 3
+if (moveCount==3 && grid1[1][0] == "X" && grid1[2][1] == "X"
+  ) {
+  grid1[2][0] = "O"
+  return 7;
+}
+//Part 4
+if (moveCount==3 && grid1[2][1] == "X" && grid1[1][2] == "X"
+  ) {
+  grid1[2][2] = "O"
+  return 9;
+}
+
+//Specific Trap Number 4
+if (moveCount==3 && grid1[0][0] == "X" && grid1[1][2] == "X"
+  ) {
+  grid1[0][2] = "O"
+  return 3;
+}
+//Part 2
+if (moveCount==3 && grid1[0][0] == "X" && grid1[2][1] == "X"
+  ) {
+  grid1[2][0] = "O"
+  return 7;
+}
+//Part 3
+if (moveCount==3 && grid1[0][2] == "X" && grid1[1][0] == "X"
+  ) {
+  grid1[0][0] = "O"
+  return 1;
+}
+//Part 4
+if (moveCount==3 && grid1[0][2] == "X" && grid1[2][1] == "X"
+  ) {
+  grid1[2][2] = "O"
+  return 9;
+}
+//Part 5
+if (moveCount==3 && grid1[2][0] == "X" && grid1[0][1] == "X"
+    ) {
+    grid1[0][0] = "O"
+    return 1;
+}
+//Part 6
+if (moveCount==3 && grid1[2][0] == "X" && grid1[1][2] == "X"
+    ) {
+    grid1[2][2] = "O"
+    return 9;
+}
+//Part 7
+if (moveCount==3 && grid1[2][2] == "X" && grid1[1][0] == "X"
+  ) {
+    grid1[2][0] = "O"
+    return 7;
+}
+//Part 8
+if (moveCount==3 && grid1[2][2] == "X" && grid1[0][1] == "X"
+  ) {
+    grid1[0][2] = "O"
+    return 3;
+}
+
+for (let k = 1; k <= 9; k++) {
+  row = floor((k-1)/3)
+  col = (k-1)%3
+  if (grid2[row][col] == "0"){
+    grid2[row][col] = "O"
+    if (confirmWin(grid2)){
+      grid1[row][col] = "O"
+      return k;
+    }//nested if
+    else {
+      grid2[row][col] = "0"
+    }//else
+  }//if
+}//for k
+
+for (let k = 1; k <= 9; k++) {
+  row = floor((k-1)/3)
+  col = (k-1)%3
+  if (grid2[row][col] == "0"){
+    grid2[row][col] = "X"
+    if (confirmWin(grid2)){
+      grid1[row][col] = "O"
+      return k;
+    }//nested if
+    else {
+      grid2[row][col] = "0"
+    }//else
+  }//if
+}//for l
+  
+  while (looking){
+    squareNumber = round (random(1,9))
+    a = floor ((squareNumber-1)/3)
+    b = (squareNumber-1)%3
+  if (decisionArray[a][b] == "0"){
+    looking = false
+    }//if
+  }//while
+    decisionArray[a][b] = "O"
+    drawCircle(squareNumber)
+}//computerRandomMove
+
+function consoleOutput(x) {
+for (var i = 0; i < 3; i++) {
+print(i + ": " + x[i][0] + " " + x[i][1]
++ " " + x[i][2] + " ");
+  } //endfor
+} //consoleoutput
+function drawCircle(n){
+circle((n-1)%3*133+66, floor((n-1)/3)*133+66,100)
+}
+function drawX(n){
+line((n-1)%3*133+30,floor((n-1)/3)*133+33,(n-1)%3*133+100,floor((n-1)/3)*133+100)
+  
+line((n-1)%3*133+100,floor((n-1)/3)*133+33,(n-1)%3*133+30,floor((n-1)/3)*133+100)
+}
 
 function draw() {
-  background("black");
-  caterpillar();
-  crossOver()
-  fill("red");
-  circle(foodX, foodY, 10);
-  fill("rgb(34,34,34)");
-  rect(400, 0, 300, 400);
-  fill("white");
-  textSize(20);
-  text("score = " + len, 420, 100);
+if (moveCount%2==0){
+outputMove();
+}//if
+else{
+drawCircle(computerRandomMove(decisionArray, tempArray))
+consoleOutput(decisionArray)
+moveCount++
 }
+checkWin(decisionArray);
+if (moveCount == 9) {
+ //do your draw code here
+noLoop();
+  } //if
+}//drawloop
