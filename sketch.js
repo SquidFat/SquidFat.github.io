@@ -1,4 +1,3 @@
-//caterpillar section locations
 let cX = [];
 let cY = [];
 //length
