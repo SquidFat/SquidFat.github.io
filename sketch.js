@@ -8,169 +8,96 @@ let count = -1;
 let showButton;
 let Key;
 let uppercaseKey;
-let tempLetter;
 let lineNumber = 1;
-let temp;
 
 //Loads the text file.
 function preload() {
   words = loadStrings("words.txt");
 } //preload
 
-//Resets the game
-function playAgain() {
-  x = round(random(words.length));
-  w = words[x];
-  lineNumber = 1;
-  lineClick = 0;
-  tempString = "";
-  xCord = 150;
-  yCord = 200;
-  count = -1;
-
-  stroke(20, 20, 20);
-  fill(20, 20, 20);
-  rect(0, 0, 500, 500);
-
-  for (let i = 1; i <= 6; i++) {
-    squares(i);
-  } // for
-  for (let i = 0; i < 26; i++) {
-    letterButtons[i].buttonName.style("background-color: #414149");
-  } // for
-  stroke("white");
-  fill("white");
-  textSize(30);
-  text("Wordle", 200, 130);
-  textSize(20);
-  playagainButton.hide();
-}
-
-//Deletes the last letter inputted
-function Backspace() {
-  if (count >= 0) {
-    stroke(170, 170, 170);
-    fill(20, 20, 20);
-    rect(xCord - 9, yCord - 23, 30, 30);
-    count -= 1;
-    xCord -= 30;
-    lineClick -= 1;
-    tempLetter = tempString.charAt(count + 1);
-    tempString = tempString.replace(tempLetter, "");
-  } // if
-} // Backspace
-
-//This function allows for keyboard inputs
+//This function allows for keys on the users keyboard to type words as well. (It could be simpler but this works just fine)
 function keyPressed() {
-  //backspace key
-  if (keyCode == 8) {
-    Backspace();
-  } // if
-
-  // enterKey
-  if (keyCode == 13) {
-    enterWord();
-  } // if
-
-  // letter imputs using keyboard
   if (keyCode >= 65 && keyCode <= 90) {
     Key = `${key}`;
     uppercaseKey = Key.toUpperCase();
-    stroke("white");
-    fill("white");
-    if (lineNumber != 7 && count < 4) {
-      xCord += 30;
-      count += 1;
-      lineClick++;
-      tempString += uppercaseKey;
+    stroke("black");
+    fill("black");
+    tempString += uppercaseKey;
+    xCord += 30;
+    count += 1;
+    lineClick++;
+    if (lineNumber != 7) {
       text(uppercaseKey, xCord, yCord);
+      if (count == 4) {
+        xCord = 150;
+        yCord += 35;
+        count = -1;
+
+        if (words.indexOf(tempString) == -1) {
+          lineClick -= 5;
+          squares(floor(lineClick / 5) + 1);
+          yCord -= 35;
+        } //ifword
+        else if (tempString == w) {
+          squares(floor((lineClick - 5) / 5) + 1);
+          colourAdjust(tempString);
+          stroke("orange");
+          fill("orange");
+          text("You Guessed The Correct Word:", 100, 40);
+          showWord();
+          lineNumber = 7;
+        } else {
+          squares(floor((lineClick - 5) / 5) + 1);
+          colourAdjust(tempString);
+          lineNumber += 1;
+        } //else
+
+        tempString = "";
+      } // ifrow
     } // ifline
   } // ifkeyCode
 } //keyPressed
 
 //Creates the squares for the letters to be placed in.
 function squares(n) {
-  stroke(170, 170, 170);
-  fill(20, 20, 20);
+  stroke("black");
+  fill("lightgrey");
   for (i = 0; i < 5; i++) {
     rect(171 + 30 * i, 177 + 35 * (n - 1), 30, 30);
   } //for
 } //squares
 
-//Changes the colour of the letters accordingly
-function colourAdjust() {
+//Changes the colour of the letters depending on their positioning and if they are in the random word. Only changes the colour once the word is complete and if it is a real word.
+function colourAdjust(string) {
   for (let i = 0; i < 5; i++) {
-    let letter = tempString.charAt(i);
-    temp = unchar(letter) - 65;
+    let letter = string.charAt(i);
 
     if (letter == w.charAt(i)) {
-      letterButtons[temp].buttonName.style("background-color:lime");
-      stroke("lime");
-      fill("lime");
+      stroke("green");
+      fill("green");
     } else if (w.includes(letter)) {
-      letterButtons[temp].buttonName.style("background-color:orange");
       stroke("orange");
       fill("orange");
     } else {
-      letterButtons[temp].buttonName.style("background-color:black");
-      stroke("white");
-      fill("white");
+      stroke("black");
+      fill("black");
     } //else
 
-    text(letter, xCord - 120 + i * 30, yCord);
+    text(letter, xCord + 30 + i * 30, yCord - 35);
   } //for
-} //colour adjust
-
-//Main function
-function enterWord() {
-  if (count == 4) {
-    if (words.indexOf(tempString) == -1) {
-      lineClick -= 5;
-      squares(floor(lineClick / 5) + 1);
-      xCord = 150;
-    } //ifword
-    else if (tempString == w) {
-      squares(floor((lineClick - 5) / 5) + 1);
-      colourAdjust();
-      stroke("white");
-      fill("white");
-      text("You Guessed The Correct Word:", 100, 40);
-      showWord();
-      playagainButton.show();
-      lineNumber = 8;
-    } else {
-      squares(floor((lineClick - 5) / 5) + 1);
-      colourAdjust();
-      xCord = 150;
-      yCord += 35;
-      lineNumber += 1;
-    } //else
-    if (lineNumber == 7) {
-      playagainButton.show();
-      showWord();
-      text("You Did Not Guess The Word", 120, 40);
-    }
-    count = -1;
-    tempString = "";
-  } //if
-} //enterWord
+} //colour
 
 //Shows the randomly picked word at the top of the screen.
 function showWord() {
-  stroke("white");
-  fill("white");
+  stroke("black");
+  fill("black");
   text(w, 210, 70);
 } //showWord
 
 //Runs the functions that create the initial visuals and selects a random word.
 function setup() {
   createCanvas(500, 500);
-  background(20, 20, 20);
-  stroke("white");
-  fill("white");
-  textSize(30);
-  text("Wordle", 200, 130);
-
+  background("beige");
   for (let i = 1; i <= 6; i++) {
     squares(i);
   } //for
@@ -180,29 +107,9 @@ function setup() {
   showButton = createButton("Show Word");
   showButton.position(50, 50);
   showButton.mousePressed(showWord);
-  showButton.style("color:white");
-  showButton.style("background-color: #414149");
-
-  enterButton = createButton("Enter");
-  enterButton.position(125, 440);
-  enterButton.mousePressed(enterWord);
-  enterButton.style("color:white");
-  enterButton.style("background-color: #414149");
-
-  backspaceButton = createButton("⌦");
-  backspaceButton.position(330, 440);
-  backspaceButton.mousePressed(Backspace);
-  backspaceButton.style("color:white");
-  backspaceButton.style("background-color: #414149");
-
-  playagainButton = createButton("Play Again");
-  playagainButton.position(370, 400);
-  playagainButton.mousePressed(playAgain);
-  playagainButton.style("color:black");
-  playagainButton.style("background-color:#DC143C");
-  playagainButton.hide();
 
   x = round(random(words.length));
+  console.log(x + 1);
   fill("black");
   w = words[x];
 } //setup
@@ -215,14 +122,40 @@ class ButtonClass {
     this.buttonName.mousePressed(buttonCommand);
     this.num = num;
     function buttonCommand() {
-      stroke("white");
-      fill("white");
-      if (lineNumber <= 7 && count < 4) {
-        xCord += 30;
-        count += 1;
-        lineClick++;
-        tempString += text1;
+      stroke("black");
+      fill("black");
+      tempString += text1;
+      xCord += 30;
+      count += 1;
+      lineClick++;
+      if (lineNumber != 7) {
         text(text1, xCord, yCord);
+        if (count == 4) {
+          xCord = 150;
+          yCord += 35;
+          count = -1;
+
+          if (words.indexOf(tempString) == -1) {
+            lineClick -= 5;
+            squares(floor(lineClick / 5) + 1);
+            yCord -= 35;
+          } //ifword
+          else if (tempString == w) {
+            squares(floor((lineClick - 5) / 5) + 1);
+            colourAdjust(tempString);
+            stroke("orange");
+            fill("orange");
+            text("You Guessed The Correct Word:", 210, 50);
+            showWord();
+            lineNumber = 7;
+          } else {
+            squares(floor((lineClick - 5) / 5) + 1);
+            colourAdjust(tempString);
+            lineNumber += 1;
+          } //else
+
+          tempString = "";
+        } //ifrow
       } //ifline
     } //buttonCommand
   } //constructor
@@ -231,25 +164,13 @@ class ButtonClass {
 //Outputs the buttons that can be clicked to output letters in the boxes.
 function OutputButtons() {
   let count = 0;
-  let i = [81, 87, 69, 82, 84, 89, 85, 73, 79, 80];
-  for (let m = 0; m < i.length; m++) {
-    letterButtons[i[m] - 65] = new ButtonClass("button", char(i[m]), 0);
-    letterButtons[i[m] - 65].buttonName.style("color:white");
-    letterButtons[i[m] - 65].buttonName.style("background-color: #414149");
-    letterButtons[i[m] - 65].buttonName.position(135 + 22.2 * m, 400);
-  } // for let m
-  let j = [65, 83, 68, 70, 71, 72, 74, 75, 76];
-  for (let m = 0; m < j.length; m++) {
-    letterButtons[j[m] - 65] = new ButtonClass("button", char(j[m]), 0);
-    letterButtons[j[m] - 65].buttonName.style("color:white");
-    letterButtons[j[m] - 65].buttonName.style("background-color: #414149");
-    letterButtons[j[m] - 65].buttonName.position(142 + 22.2 * m, 420);
-  } // for let m
-  let k = [90, 88, 67, 86, 66, 78, 77];
-  for (let m = 0; m < k.length; m++) {
-    letterButtons[k[m] - 65] = new ButtonClass("button", char(k[m]), 0);
-    letterButtons[k[m] - 65].buttonName.style("color:white");
-    letterButtons[k[m] - 65].buttonName.style("background-color: #414149");
-    letterButtons[k[m] - 65].buttonName.position(170 + 22.2 * m, 440);
-  }
+  for (i = 0; i < 26; i++) {
+    letter = char(i + 65);
+    letterButtons[i] = new ButtonClass("button", letter, 0);
+    if (i < 13) {
+      letterButtons[i].buttonName.position(100 + 22 * i, 100);
+    } else {
+      letterButtons[i].buttonName.position(100 + 22.2 * (i - 13), 120);
+    } //else
+  } //for i
 } //outputbuttons
