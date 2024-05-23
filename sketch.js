@@ -1,606 +1,255 @@
-/*
+const letterButtons = [];
+let words, x, w;
+let lineClick = 0;
+let tempString = "";
+let xCord = 150;
+let yCord = 200;
+let count = -1;
+let showButton;
+let Key;
+let uppercaseKey;
+let tempLetter;
+let lineNumber = 1;
+let temp;
 
-SPECIFIC MOVE NUMBER 1:
-My program will counter all opening corner moves to square 
-[0][0], [0][2], [2][0], and [2][2] by placing an ’O’ in square [1][1]
-The code for this may be found at line numbers “403-413”
+//Loads the text file.
+function preload() {
+  words = loadStrings("words.txt");
+} //preload
 
-X # #   X # #
-# # # → # O #
-# # #   # # #
+//Resets the game
+function playAgain() {
+  x = round(random(words.length));
+  w = words[x];
+  lineNumber = 1;
+  lineClick = 0;
+  tempString = "";
+  xCord = 150;
+  yCord = 200;
+  count = -1;
 
-# # X   # # X
-# # # → # O #
-# # #   # # #
+  stroke(20, 20, 20);
+  fill(20, 20, 20);
+  rect(0, 0, 500, 500);
 
-# # #   # # #
-# # # → # O #
-X # #   X # #
-
-# # #   # # #
-# # # → # O #
-# # X   # # X
-
-SPECIFIC MOVE NUMBER 2:
-My program will counter all opening side moves to square 
-[0][1], [1][0], [1][2], [2][1] by placing an ’O’ in square [1][1]
-The code for this may be found at line numbers “416-426”
-
-# X #   # X #
-# # # → # O #
-# # #   # # #
-
-# # #   # # #
-X # # → X O #
-# # #   # # #
-
-# # #   # # #
-# # X → # O X
-# # #   # # #
-
-# # #   # # #
-# # # → # O #
-# X #   # X #
-
-SPECIFIC MOVE NUMBER 3:
-My program will counter an opening middle move to square 
-[1][1] by placing an ’O’ in square [0][2]
-The code for this may be found at line numbers “429-436”
-
-# # #   # # O
-# X # → # X #
-# # #   # # #
-
-Specific Trap 1:
-My program will counter an opening trap to square 
-[0][0] and [2][2] by placing an ’O’ in square [1][1] and then [1][2]
-The code for this may be found at line numbers “439-443”
-
-X # #   X # #   X # #   X # #
-# # # → # O # → # O # → # O O
-# # #   # # #   # # X   # # X
-
-Specific Trap 1 (Part 2):
-My program will counter an opening trap to square 
-[0][2] and [2][0] by placing an ’O’ in square [1][1] and then [1][2]
-The code for this may be found at line numbers “445-449”
-
-# # X   # # X   # # X   # # X
-# # # → # O # → # O # → # O O
-# # #   # # #   X # #   X # #
-
-Specific Trap 2:
-My program will counter an opening trap to square 
-[1][1] and [2][0] by placing an ’O’ in square [0][2] and then [0][0]
-The code for this may be found at line numbers “452-457”
-
-# # #   # # O   # # O   O # O
-# X # → # X # → # X # → # X #
-# # #   # # #   X # #   X # #
-
-Specific Trap 3:
-My program will counter an opening trap to square 
-[0][1] and [1][2] by placing an ’O’ in square [1][1] and then [0][2]
-The code for this may be found at line numbers “460-464”
-
-# X #   # X #   # X #   # X O
-# # # → # O # → # O X → # O X
-# # #   # # #   # # #   # # #
-
-Specific Trap 3 (Part 2):
-My program will counter an opening trap to square 
-[0][1] and [1][0] by placing an ’O’ in square [1][1] and then [0][0]
-The code for this may be found at line numbers “466-470”
-
-# X #   # X #   # X #   O X #
-# # # → # O # → X O # → X O #
-# # #   # # #   # # #   # # #
-
-Specific Trap 3 (Part 3):
-My program will counter an opening trap to square 
-[1][0] and [2][1] by placing an ’O’ in square [1][1] and then [2][0]
-The code for this may be found at line numbers “472-476”
-
-# # #   # # #   # # #   # # #
-X # # → X O # → X O # → X O #
-# # #   # # #   # X #   O X #
-
-Specific Trap 3 (Part 4):
-My program will counter an opening trap to square 
-[2][1] and [1][2] by placing an ’O’ in square [1][1] and then [2][2]
-The code for this may be found at line numbers “478-482”
-
-# # #   # # #   # # #   # # #
-# # # → # O # → # O X → # O X
-# X #   # X #   # X #   # X O
-
-Specific Trap 4:
-My program will counter an opening trap to square 
-[0][0] and [1][2] by placing an ’O’ in square [1][1] and then [0][2]
-The code for this may be found at line numbers “485-489”
-
-X # #   X # #   X # #   X # O
-# # # → # O # → # O X → # O X
-# # #   # # #   # # #   # # #
-
-Specific Trap 4 (Part 2):
-My program will counter an opening trap to square 
-[0][0] and [2][1] by placing an ’O’ in square [1][1] and then [2][0]
-The code for this may be found at line numbers “491-495”
-
-X # #   X # #   X # #   X # #
-# # # → # O # → # O # → # O #
-# # #   # # #   # X #   O X #
-
-Specific Trap 4 (Part 3):
-My program will counter an opening trap to square 
-[0][2] and [1][0] by placing an ’O’ in square [1][1] and then [0][0]
-The code for this may be found at line numbers “497-501”
-
-# # X   # # X   # # X   O # X
-# # # → # O # → X O # → X O #
-# # #   # # #   # # #   # # #
-
-Specific Trap 4 (Part 4):
-My program will counter an opening trap to square 
-[0][2] and [2][1] by placing an ’O’ in square [1][1] and then [2][2]
-The code for this may be found at line numbers “503-507”
-
-# # X   # # X   # # X   # # X
-# # # → # O # → # O # → # O #
-# # #   # # #   # X #   # X O
-
-Specific Trap 4 (Part 5):
-My program will counter an opening trap to square 
-[2][0] and [0][1] by placing an ’O’ in square [1][1] and then [0][0]
-The code for this may be found at line numbers “509-513”
-
-# # #   # # #   # X #   O X #
-# # # → # O # → # O # → # O #
-X # #   X # #   X # #   X # #
-
-Specific Trap 4 (Part 6):
-My program will counter an opening trap to square 
-[2][0] and [1][2] by placing an ’O’ in square [1][1] and then [2][2]
-The code for this may be found at line numbers “515-519”
-
-# # #   # # #   # # #   # # #
-# # # → # O # → # O X → # O X
-X # #   X # #   X # #   X # O
-
-Specific Trap 4 (Part 7):
-My program will counter an opening trap to square 
-[2][2] and [1][0] by placing an ’O’ in square [1][1] and then [2][0]
-The code for this may be found at line numbers “521-525”
-
-# # #   # # #   # # #   # # #
-# # # → # O # → X O # → X O #
-# # X   # # X   # # X   O # X
-
-Specific Trap 4 (Part 8):
-My program will counter an opening trap to square 
-[2][2] and [0][1] by placing an ’O’ in square [1][1] and then [0][2]
-The code for this may be found at line numbers “527-531”
-
-# # #   # # #   # X #   # X O
-# # # → # O # → # O # → # O #
-# # X   # # X   # # X   # # X
-
-*/
-
-let moveCount = 0
-
-var decisionArray = [];
-for (var i = 0; i < 3; i++) {
- decisionArray[i] = [];
+  for (let i = 1; i <= 6; i++) {
+    squares(i);
+  } // for
+  for (let i = 0; i < 26; i++) {
+    letterButtons[i].buttonName.style("background-color: #414149");
+  } // for
+  stroke("white");
+  fill("white");
+  textSize(30);
+  text("Wordle", 200, 130);
+  textSize(20);
+  playagainButton.hide();
 }
 
-var tempArray = [];
-for (var i = 0; i < 3; i++) {
- tempArray[i] = [];
-}
+//Deletes the last letter inputted
+function Backspace() {
+  if (count >= 0) {
+    stroke(170, 170, 170);
+    fill(20, 20, 20);
+    rect(xCord - 9, yCord - 23, 30, 30);
+    count -= 1;
+    xCord -= 30;
+    lineClick -= 1;
+    tempLetter = tempString.charAt(count + 1);
+    tempString = tempString.replace(tempLetter, "");
+  } // if
+} // Backspace
 
-function setup() {
- createCanvas(400, 400);
- background("gray");
- textSize("12");
- stroke("white")
- fill("rgb(63,63,63)")
- line(133,0,133,400)
- line(266,0,266,400)
- line(0,133,400,133)
- line(0,266,400,266)
- //reset decisionArray with 0's
- initArray(decisionArray);
- initArray(tempArray);
- console.log(decisionArray[0][0])
-}//setup
-function initArray(x) {
- for (let i = 0; i < 3; i++) {
- for (let j = 0; j < 3; j++) {
- x[i][j] = "0";
- } //for j
- } //for i
-}
+//This function allows for keyboard inputs
+function keyPressed() {
+  //backspace key
+  if (keyCode == 8) {
+    Backspace();
+  } // if
 
-function outputMove() {
-  
- if (
- mouseX > 0 &&
- mouseX < 133 &&
- mouseY > 0 &&
- mouseY < 133 &&
- mouseIsPressed &&
- decisionArray[0][0] == "0"
- ) {
- drawX(1);
- moveCount++;
- decisionArray[0][0] = "X"
- consoleOutput(decisionArray)
- } //if  
+  // enterKey
+  if (keyCode == 13) {
+    enterWord();
+  } // if
 
- if (
- mouseX > 133 &&
- mouseX < 266 &&
- mouseY > 0 &&
- mouseY < 133 &&
- mouseIsPressed &&
- decisionArray[0][1] == "0"
- ) {
- drawX(2);
- moveCount++;
- decisionArray[0][1] = "X"
- consoleOutput(decisionArray)
- } //if
-  
- if (
- mouseX > 266 &&
- mouseX < 400 &&
- mouseY > 0 &&
- mouseY < 133 &&
- mouseIsPressed &&
- decisionArray[0][2] == "0"
- ) {
- drawX(3);
- moveCount++;
- decisionArray[0][2] = "X"
- consoleOutput(decisionArray)
- } //if
+  // letter imputs using keyboard
+  if (keyCode >= 65 && keyCode <= 90) {
+    Key = `${key}`;
+    uppercaseKey = Key.toUpperCase();
+    stroke("white");
+    fill("white");
+    if (lineNumber != 7 && count < 4) {
+      xCord += 30;
+      count += 1;
+      lineClick++;
+      tempString += uppercaseKey;
+      text(uppercaseKey, xCord, yCord);
+    } // ifline
+  } // ifkeyCode
+} //keyPressed
 
- if (
- mouseX > 0 &&
- mouseX < 133 &&
- mouseY > 133 &&
- mouseY < 266 &&
- mouseIsPressed &&
- decisionArray[1][0] == "0"
- ) {
- drawX(4);
- moveCount++;
- decisionArray[1][0] = "X"
- consoleOutput(decisionArray)
- } //if
+//Creates the squares for the letters to be placed in.
+function squares(n) {
+  stroke(170, 170, 170);
+  fill(20, 20, 20);
+  for (i = 0; i < 5; i++) {
+    rect(171 + 30 * i, 177 + 35 * (n - 1), 30, 30);
+  } //for
+} //squares
 
- if (
- mouseX > 133 &&
- mouseX < 266 &&
- mouseY > 133 &&
- mouseY < 266 &&
- mouseIsPressed &&
- decisionArray[1][1] == "0"
- ) {
- drawX(5);
- moveCount++;
- decisionArray[1][1] = "X"
- consoleOutput(decisionArray)
- } //if
-  
- if (
- mouseX > 266 &&
- mouseX < 400 &&
- mouseY > 133 &&
- mouseY < 266 &&
- mouseIsPressed &&
- decisionArray[1][2] == "0"
- ) {
- drawX(6);
- moveCount++;
- decisionArray[1][2] = "X"
- consoleOutput(decisionArray)
- } //if
+//Changes the colour of the letters accordingly
+function colourAdjust() {
+  for (let i = 0; i < 5; i++) {
+    let letter = tempString.charAt(i);
+    temp = unchar(letter) - 65;
 
- if (
- mouseX > 0 &&
- mouseX < 133 &&
- mouseY > 266 &&
- mouseY < 400 &&
- mouseIsPressed &&
- decisionArray[2][0] == "0"
- ) {
- drawX(7);
- moveCount++;
- decisionArray[2][0] = "X"
- consoleOutput(decisionArray)
- }//if
- 
- if (
- mouseX > 133 &&
- mouseX < 266 &&
- mouseY > 266 &&
- mouseY < 400 &&
- mouseIsPressed &&
- decisionArray[2][1] == "0"
- ) {
- drawX(8);
- moveCount++;
- decisionArray[2][1] = "X"
- consoleOutput(decisionArray)
- }//if
-   
- if (
- mouseX > 266 &&
- mouseX < 400 &&
- mouseY > 266 &&
- mouseY < 400 &&
- mouseIsPressed &&
- decisionArray[2][2] == "0"
- ) {
- drawX(9);
- moveCount++;
- decisionArray[2][2] = "X"
- consoleOutput(decisionArray)
- } //if
-}//outputMove
+    if (letter == w.charAt(i)) {
+      letterButtons[temp].buttonName.style("background-color:lime");
+      stroke("lime");
+      fill("lime");
+    } else if (w.includes(letter)) {
+      letterButtons[temp].buttonName.style("background-color:orange");
+      stroke("orange");
+      fill("orange");
+    } else {
+      letterButtons[temp].buttonName.style("background-color:black");
+      stroke("white");
+      fill("white");
+    } //else
 
-function confirmWin(n){
-  if (
-    n[0][0] == n[0][1] && n[0][0] == n[0][2] && n[0][0]!="0" || 
-    n[1][0] == n[1][1] && n[1][0] == n[1][2] && n[1][0]!="0" ||
-    n[2][0] == n[2][1] && n[2][0] == n[2][2] && n[2][0]!="0" || 
-    
-    n[0][0] == n[1][0] && n[0][0] == n[2][0] && n[0][0]!="0" ||
-    n[0][1] == n[1][1] && n[0][1] == n[2][1] && n[0][1]!="0" || 
-    n[0][2] == n[1][2] && n[0][2] == n[2][2] && n[0][2]!="0" ||
-    
-    n[0][0] == n[1][1] && n[0][0] == n[2][2] && n[0][0]!="0" || 
-    n[2][0] == n[1][1] && n[2][0] == n[0][2] && n[2][0]!="0" 
-  ) {
-  return true;
-  }//if
-  else {
-  return false;
-  }//else
-}//cW
+    text(letter, xCord - 120 + i * 30, yCord);
+  } //for
+} //colour adjust
 
-function checkWin(n){
-  if (confirmWin(n)) {
-    noLoop()
-    textSize(40)
-  if (moveCount%2==0) {
-    text("O Won",140,200) 
-  }
-  if (moveCount%2==1) {
-    text("X Won",140,200)
+//Main function
+function enterWord() {
+  if (count == 4) {
+    if (words.indexOf(tempString) == -1) {
+      lineClick -= 5;
+      squares(floor(lineClick / 5) + 1);
+      xCord = 150;
+    } //ifword
+    else if (tempString == w) {
+      squares(floor((lineClick - 5) / 5) + 1);
+      colourAdjust();
+      stroke("white");
+      fill("white");
+      text("You Guessed The Correct Word:", 100, 40);
+      showWord();
+      playagainButton.show();
+      lineNumber = 8;
+    } else {
+      squares(floor((lineClick - 5) / 5) + 1);
+      colourAdjust();
+      xCord = 150;
+      yCord += 35;
+      lineNumber += 1;
+    } //else
+    if (lineNumber == 7) {
+      playagainButton.show();
+      showWord();
+      text("You Did Not Guess The Word", 120, 40);
     }
-  }//if[]
-  else if (moveCount==9) {
-    noLoop()
-    textSize(40)
-    text("Draw",150,200)
-  }//else if
-}//checkWin
-
-//grid1 = decisionArray
-//grid2 = tempArray
-function computerRandomMove(grid1, grid2){
-  let row, col, a, b, squareNumber;
-  let looking = true
-  for (let i = 0; i < 3; i++) {
-  for (let j = 0; j < 3; j++) {
-  grid2[i][j] = grid1[i][j]
-  } //for j
-} //for i
-
-//Specific Move Number 1
-if (moveCount==1) {
-if (
-grid1[0][0] == "X" ||
-grid1[0][2] == "X" ||
-grid1[2][0] == "X" ||
-grid1[2][2] == "X"
-) {
-grid1[1][1] = "O"
-return 5;
-  }
-}
-
-//Specific Move Number 2
-if (moveCount==1) {
-if (
-grid1[0][1] == "X" ||
-grid1[1][0] == "X" ||
-grid1[1][2] == "X" ||
-grid1[2][1] == "X"
-) {
-grid1[1][1] = "O"
-return 5;
-  }
-}
-  
-//Specific Move Number 3
-if (moveCount==1) {
-  if (
-  grid1[1][1] == "X"
-  ) {
-  grid1[0][2] = "O"
-  return 3;
-  }
-}
-
-//Specific Trap Number 1
-if (moveCount == 3) {
-  if (grid1[0][0] == "X" && grid1[2][2] == "X"){
-    grid1[1][2] = "O"
-    return 6;
-  }//if
-  //Part 2
-else if (grid1[0][2] == "X" && grid1[2][0] == "X") {
-  grid1[1][2] = "O"
-  return 6;
-  }//else if
-}//moveCount  
-
-//Specific Trap Number 2
-if (moveCount==3) {
-  if (grid1[1][1] == "X" && grid1[2][0] == "X"){
-    grid1[0][0] = "O"
-    return 1;
-  }//nested if
-}//if
-
-//Specific Trap Number 3
-if (moveCount==3 && grid1[0][1] == "X" && grid1[1][2] == "X"
-  ) {
-  grid1[0][2] = "O"
-  return 3;
-}
-//Part 2
-if (moveCount==3 && grid1[0][1] == "X" && grid1[1][0] == "X"
-  ) {
-  grid1[0][0] = "O"
-  return 1;
-}
-//Part 3
-if (moveCount==3 && grid1[1][0] == "X" && grid1[2][1] == "X"
-  ) {
-  grid1[2][0] = "O"
-  return 7;
-}
-//Part 4
-if (moveCount==3 && grid1[2][1] == "X" && grid1[1][2] == "X"
-  ) {
-  grid1[2][2] = "O"
-  return 9;
-}
-
-//Specific Trap Number 4
-if (moveCount==3 && grid1[0][0] == "X" && grid1[1][2] == "X"
-  ) {
-  grid1[0][2] = "O"
-  return 3;
-}
-//Part 2
-if (moveCount==3 && grid1[0][0] == "X" && grid1[2][1] == "X"
-  ) {
-  grid1[2][0] = "O"
-  return 7;
-}
-//Part 3
-if (moveCount==3 && grid1[0][2] == "X" && grid1[1][0] == "X"
-  ) {
-  grid1[0][0] = "O"
-  return 1;
-}
-//Part 4
-if (moveCount==3 && grid1[0][2] == "X" && grid1[2][1] == "X"
-  ) {
-  grid1[2][2] = "O"
-  return 9;
-}
-//Part 5
-if (moveCount==3 && grid1[2][0] == "X" && grid1[0][1] == "X"
-    ) {
-    grid1[0][0] = "O"
-    return 1;
-}
-//Part 6
-if (moveCount==3 && grid1[2][0] == "X" && grid1[1][2] == "X"
-    ) {
-    grid1[2][2] = "O"
-    return 9;
-}
-//Part 7
-if (moveCount==3 && grid1[2][2] == "X" && grid1[1][0] == "X"
-  ) {
-    grid1[2][0] = "O"
-    return 7;
-}
-//Part 8
-if (moveCount==3 && grid1[2][2] == "X" && grid1[0][1] == "X"
-  ) {
-    grid1[0][2] = "O"
-    return 3;
-}
-
-for (let k = 1; k <= 9; k++) {
-  row = floor((k-1)/3)
-  col = (k-1)%3
-  if (grid2[row][col] == "0"){
-    grid2[row][col] = "O"
-    if (confirmWin(grid2)){
-      grid1[row][col] = "O"
-      return k;
-    }//nested if
-    else {
-      grid2[row][col] = "0"
-    }//else
-  }//if
-}//for k
-
-for (let k = 1; k <= 9; k++) {
-  row = floor((k-1)/3)
-  col = (k-1)%3
-  if (grid2[row][col] == "0"){
-    grid2[row][col] = "X"
-    if (confirmWin(grid2)){
-      grid1[row][col] = "O"
-      return k;
-    }//nested if
-    else {
-      grid2[row][col] = "0"
-    }//else
-  }//if
-}//for l
-  
-  while (looking){
-    squareNumber = round (random(1,9))
-    a = floor ((squareNumber-1)/3)
-    b = (squareNumber-1)%3
-  if (decisionArray[a][b] == "0"){
-    looking = false
-    }//if
-  }//while
-    decisionArray[a][b] = "O"
-    drawCircle(squareNumber)
-}//computerRandomMove
-
-function consoleOutput(x) {
-for (var i = 0; i < 3; i++) {
-print(i + ": " + x[i][0] + " " + x[i][1]
-+ " " + x[i][2] + " ");
-  } //endfor
-} //consoleoutput
-function drawCircle(n){
-circle((n-1)%3*133+66, floor((n-1)/3)*133+66,100)
-}
-function drawX(n){
-line((n-1)%3*133+30,floor((n-1)/3)*133+33,(n-1)%3*133+100,floor((n-1)/3)*133+100)
-  
-line((n-1)%3*133+100,floor((n-1)/3)*133+33,(n-1)%3*133+30,floor((n-1)/3)*133+100)
-}
-
-function draw() {
-if (moveCount%2==0){
-outputMove();
-}//if
-else{
-drawCircle(computerRandomMove(decisionArray, tempArray))
-consoleOutput(decisionArray)
-moveCount++
-}
-checkWin(decisionArray);
-if (moveCount == 9) {
- //do your draw code here
-noLoop();
+    count = -1;
+    tempString = "";
   } //if
-}//drawloop
+} //enterWord
+
+//Shows the randomly picked word at the top of the screen.
+function showWord() {
+  stroke("white");
+  fill("white");
+  text(w, 210, 70);
+} //showWord
+
+//Runs the functions that create the initial visuals and selects a random word.
+function setup() {
+  createCanvas(500, 500);
+  background(20, 20, 20);
+  stroke("white");
+  fill("white");
+  textSize(30);
+  text("Wordle", 200, 130);
+
+  for (let i = 1; i <= 6; i++) {
+    squares(i);
+  } //for
+  textSize(20);
+  OutputButtons();
+
+  showButton = createButton("Show Word");
+  showButton.position(50, 50);
+  showButton.mousePressed(showWord);
+  showButton.style("color:white");
+  showButton.style("background-color: #414149");
+
+  enterButton = createButton("Enter");
+  enterButton.position(125, 440);
+  enterButton.mousePressed(enterWord);
+  enterButton.style("color:white");
+  enterButton.style("background-color: #414149");
+
+  backspaceButton = createButton("⌦");
+  backspaceButton.position(330, 440);
+  backspaceButton.mousePressed(Backspace);
+  backspaceButton.style("color:white");
+  backspaceButton.style("background-color: #414149");
+
+  playagainButton = createButton("Play Again");
+  playagainButton.position(370, 400);
+  playagainButton.mousePressed(playAgain);
+  playagainButton.style("color:black");
+  playagainButton.style("background-color:#DC143C");
+  playagainButton.hide();
+
+  x = round(random(words.length));
+  fill("black");
+  w = words[x];
+} //setup
+
+//Creates all the objects required and handles what happens when letters are outputted.
+class ButtonClass {
+  constructor(buttonName, text1, num) {
+    console.log(buttonName + " created");
+    this.buttonName = createButton(text1);
+    this.buttonName.mousePressed(buttonCommand);
+    this.num = num;
+    function buttonCommand() {
+      stroke("white");
+      fill("white");
+      if (lineNumber <= 7 && count < 4) {
+        xCord += 30;
+        count += 1;
+        lineClick++;
+        tempString += text1;
+        text(text1, xCord, yCord);
+      } //ifline
+    } //buttonCommand
+  } //constructor
+} //class Lbtn
+
+//Outputs the buttons that can be clicked to output letters in the boxes.
+function OutputButtons() {
+  let count = 0;
+  let i = [81, 87, 69, 82, 84, 89, 85, 73, 79, 80];
+  for (let m = 0; m < i.length; m++) {
+    letterButtons[i[m] - 65] = new ButtonClass("button", char(i[m]), 0);
+    letterButtons[i[m] - 65].buttonName.style("color:white");
+    letterButtons[i[m] - 65].buttonName.style("background-color: #414149");
+    letterButtons[i[m] - 65].buttonName.position(135 + 22.2 * m, 400);
+  } // for let m
+  let j = [65, 83, 68, 70, 71, 72, 74, 75, 76];
+  for (let m = 0; m < j.length; m++) {
+    letterButtons[j[m] - 65] = new ButtonClass("button", char(j[m]), 0);
+    letterButtons[j[m] - 65].buttonName.style("color:white");
+    letterButtons[j[m] - 65].buttonName.style("background-color: #414149");
+    letterButtons[j[m] - 65].buttonName.position(142 + 22.2 * m, 420);
+  } // for let m
+  let k = [90, 88, 67, 86, 66, 78, 77];
+  for (let m = 0; m < k.length; m++) {
+    letterButtons[k[m] - 65] = new ButtonClass("button", char(k[m]), 0);
+    letterButtons[k[m] - 65].buttonName.style("color:white");
+    letterButtons[k[m] - 65].buttonName.style("background-color: #414149");
+    letterButtons[k[m] - 65].buttonName.position(170 + 22.2 * m, 440);
+  }
+} //outputbuttons
